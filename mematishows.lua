@@ -36,22 +36,49 @@ local function updateESP(player)
 
         character.AncestryChanged:Connect(function(_, parent)
             if not parent then
-                highlight:Destroy()
-                nameLabel:Destroy()
+                if highlight then highlight:Destroy() end
+                if nameLabel then nameLabel:Destroy() end
             end
         end)
     end
 end
 
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        updateESP(player)
-    end)
-end)
-
-RunService.Heartbeat:Connect(function(deltaTime)
-    for _, player in ipairs(Players:GetPlayers()) do
+local function onCharacterAdded(character)
+    local player = Players:GetPlayerFromCharacter(character)
+    if player then
         updateESP(player)
     end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(onCharacterAdded)
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
 end)
-_G.HeadSize = 20 _G.Disabled = true game:GetService('RunService').RenderStepped:connect(function() if _G.Disabled then for i,v in next, game:GetService('Players'):GetPlayers() do if v.Name ~= game:GetService('Players').LocalPlayer.Name then pcall(function() v.Character.Head.Size = Vector3.new(_G.HeadSize,_G.HeadSize,_G.HeadSize) v.Character.Head.Transparency = 1 v.Character.Head.BrickColor = BrickColor.new("Red") v.Character.Head.Material = "Neon" v.Character.Head.CanCollide = false v.Character.Head.Massless = true end) end end end end)
+
+for _, player in ipairs(Players:GetPlayers()) do
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
+end
+
+_G.HeadSize = 20
+_G.Disabled = false -- Eğer devre dışı bırakmak istemiyorsanız 'false' olarak ayarlayın
+
+RunService.RenderStepped:Connect(function()
+    if not _G.Disabled then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player.Name ~= Players.LocalPlayer.Name and player.Character and player.Character:FindFirstChild("Head") then
+                pcall(function()
+                    player.Character.Head.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
+                    player.Character.Head.Transparency = 1
+                    player.Character.Head.BrickColor = BrickColor.new("Red")
+                    player.Character.Head.Material = "Neon"
+                    player.Character.Head.CanCollide = false
+                    player.Character.Head.Massless = true
+                end)
+            end
+        end
+    end
+end)
