@@ -1,55 +1,55 @@
 -- esp
 
-local oyuncu = oyun.Oyuncular.YerelOyuncu
-local karakter = oyuncu.Karakter veya oyuncu.KarakterEklendi:Bekle()
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
 
-local vücutParçaları = {
-    karakter:Bulunan("Gövde"),
-    karakter:Bulunan("Sol Kol"),
-    karakter:Bulunan("Sağ Kol"),
-    karakter:Bulunan("Sol Bacak"),
-    karakter:Bulunan("Sağ Bacak")
+local bodyParts = {
+    character:FindFirstChild("Torso"),
+    character:FindFirstChild("Left Arm"),
+    character:FindFirstChild("Right Arm"),
+    character:FindFirstChild("Left Leg"),
+    character:FindFirstChild("Right Leg")
 }
 
-local yüz = karakter.Kafa:Bulunan("Yüz")
+local face = character.Head:FindFirstChild("Face")
 
-local saçlar = {}
-for _, çocuk in ipairs(karakter:ÇocuklarıAl()) do
-    if çocuk:IsA("Accessory") and çocuk.Adı:lower():find("saç") then
-        table.insert(saçlar, çocuk)
+local hairs = {}
+for _, child in ipairs(character:GetChildren()) do
+    if child:IsA("Accessory") and string.lower(child.Name):find("hair") then
+        table.insert(hairs, child)
     end
 end
 
-local vurgulamaRengi = Color3.new(1, 0, 0)
-local vurgulamaSaydamlığı = 0.5
+local highlightColor = Color3.new(1, 0, 0)
+local highlightTransparency = 0.5
 
-for _, parça in ipairs(vücutParçaları) do
-    if parça then
-        local vurgulama = Instance.new("Highlight")
-        vurgulama.FillColor = vurgulamaRengi
-        vurgulama.FillTransparency = vurgulamaSaydamlığı
-        vurgulama.OutlineColor = vurgulamaRengi
-        vurgulama.OutlineTransparency = 0
-        vurgulama.Parent = parça
+for _, part in ipairs(bodyParts) do
+    if part then
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = highlightColor
+        highlight.FillTransparency = highlightTransparency
+        highlight.OutlineColor = highlightColor
+        highlight.OutlineTransparency = 0
+        highlight.Parent = part
     end
 end
 
-if yüz then
-    local yüzVurgulama = Instance.new("Highlight")
-    yüzVurgulama.FillColor = vurgulamaRengi
-    yüzVurgulama.FillTransparency = 1
-    yüzVurgulama.OutlineColor = vurgulamaRengi
-    yüzVurgulama.OutlineTransparency = 1
-    yüzVurgulama.Parent = yüz
+if face then
+    local faceHighlight = Instance.new("Highlight")
+    faceHighlight.FillColor = highlightColor
+    faceHighlight.FillTransparency = 1
+    faceHighlight.OutlineColor = highlightColor
+    faceHighlight.OutlineTransparency = 1
+    faceHighlight.Parent = face
 end
 
-for _, saç in ipairs(saçlar) do
-    local saçVurgulama = Instance.new("Highlight")
-    saçVurgulama.FillColor = vurgulamaRengi
-    saçVurgulama.FillTransparency = 1
-    saçVurgulama.OutlineColor = vurgulamaRengi
-    saçVurgulama.OutlineTransparency = 1
-    saçVurgulama.Parent = saç
+for _, hair in ipairs(hairs) do
+    local hairHighlight = Instance.new("Highlight")
+    hairHighlight.FillColor = highlightColor
+    hairHighlight.FillTransparency = 1
+    hairHighlight.OutlineColor = highlightColor
+    hairHighlight.OutlineTransparency = 1
+    hairHighlight.Parent = hair
 end
 
 -- esp bitti sırada silent aim
