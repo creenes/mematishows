@@ -36,91 +36,49 @@ local function updateESP(player)
 
         character.AncestryChanged:Connect(function(_, parent)
             if not parent then
-                highlight:Destroy()
-                nameLabel:Destroy()
+                if highlight then highlight:Destroy() end
+                if nameLabel then nameLabel:Destroy() end
             end
         end)
     end
 end
 
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
+local function onCharacterAdded(character)
+    local player = Players:GetPlayerFromCharacter(character)
+    if player then
         updateESP(player)
-    end)
-end)
+    end
+end
 
-RunService.Heartbeat:Connect(function(deltaTime)
-    for _, player in ipairs(Players:GetPlayers()) do
-        updateESP(player)
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(onCharacterAdded)
+    if player.Character then
+        onCharacterAdded(player.Character)
     end
 end)
 
-function starts(String,Start)
- 
-   return string.sub(String,1,string.len(Start))==Start
- 
+for _, player in ipairs(Players:GetPlayers()) do
+    if player.Character then
+        onCharacterAdded(player.Character)
+    end
 end
- 
- 
- 
-local headSize = 25
- 
- 
- 
-local workspace = game:GetService("Workspace")
- 
- 
- 
- 
- 
-while wait(1) do
- 
-    local workspaceChildren = workspace:GetChildren();
- 
-    for i = 1, #workspaceChildren do
- 
-        local child = workspaceChildren[i]
- 
-        if(starts(child.Name, "PseudoCharacter")) then
- 
-            if(child:FindFirstChild("Hitboxes")) then
- 
-	        local hitbox_mouse = child.Hitboxes.Mouse:GetChildren();
- 
-            local hitbox_touch = child.Hitboxes.Touch:GetChildren();
- 
-	        for i, child in ipairs(hitbox_mouse) do
- 
-	            if child.Name == "Head" then
- 
-	                local s = child.Size
- 
-	                local f = headSize
- 
-	                child.Size = Vector3.new(f, f, f)
- 
-	            end
- 
-	        end
- 
-	        for i, child in ipairs(hitbox_touch) do
- 
-	            if child.Name == "Head" then
- 
-                    local s = child.Size
- 
-                    local f = headSize
- 
-                    child.Size = Vector3.new(f, f, f)
- 
-	        end
- 
-	        end
- 
-	    end
- 
-	    end
- 
-end
- 
-end
+
+_G.HeadSize = 20
+_G.Disabled = false -- Eğer devre dışı bırakmak istemiyorsanız 'false' olarak ayarlayın
+
+RunService.RenderStepped:Connect(function()
+    if not _G.Disabled then
+        for _, player in ipairs(Players:GetPlayers()) do
+            if player.Name ~= Players.LocalPlayer.Name and player.Character and player.Character:FindFirstChild("Head") then
+                pcall(function()
+                    player.Character.Head.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
+                    player.Character.Head.Transparency = 1
+                    player.Character.Head.BrickColor = BrickColor.new("Red")
+                    player.Character.Head.Material = "Neon"
+                    player.Character.Head.CanCollide = false
+                    player.Character.Head.Massless = true
+                end)
+            end
+        end
+    end
+end)
