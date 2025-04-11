@@ -1,20 +1,45 @@
 -- esp
 
-local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+local Players = game:GetService("Players")
 
-local highlightColor = Color3.new(1, 0, 0) -- Kırmızı vurgulama rengi
-local highlightTransparency = 0.5 -- Vurgulama saydamlığı
-
-for _, part in ipairs(character:GetDescendants()) do
-    if part:IsA("BasePart") then -- Vücut parçalarını kontrol et
+local function highlightPlayer(player)
+    local character = player.Character or player.CharacterAdded:Wait()
+    if character then
         local highlight = Instance.new("Highlight")
-        highlight.FillColor = highlightColor
-        highlight.FillTransparency = highlightTransparency
-        highlight.OutlineColor = highlightColor
-        highlight.OutlineTransparency = 0
-        highlight.Parent = part
+        highlight.Parent = character
+        highlight.FillColor = Color3.new(1, 0, 0) -- Vurgu rengini ayarla
+        highlight.OutlineColor = Color3.new(1, 1, 1) -- Çerçeve rengini ayarla
+        highlight.OutlineTransparency = 0 -- Çerçeve saydamlığını ayarla
     end
+end
+
+local function removeHighlight(player)
+    local character = player.Character
+    if character then
+        local highlight = character:FindFirstChild("Highlight")
+        if highlight then
+            highlight:Destroy()
+        end
+    end
+end
+
+Players.PlayerAdded:Connect(function(player)
+    highlightPlayer(player)
+    player.CharacterAdded:Connect(function(character)
+        highlightPlayer(player)
+    end)
+
+    player.CharacterRemoving:Connect(function(character)
+        removeHighlight(player)
+    end)
+end)
+
+Players.PlayerRemoving:Connect(function(player)
+    removeHighlight(player)
+end)
+
+for _, player in ipairs(Players:GetPlayers()) do
+    highlightPlayer(player)
 end
 
 -- esp bitti sırada silent aim
