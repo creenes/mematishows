@@ -1,84 +1,128 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
+-- esp
 
-local ESP_UPDATE_RATE = 0.1 -- ESP'nin yenilenme hızı (saniye)
+local oyuncu = oyun.Oyuncular.YerelOyuncu
+local karakter = oyuncu.Karakter veya oyuncu.KarakterEklendi:Bekle()
 
-local function updateESP(player)
-    local character = player.Character
-    if character and character:FindFirstChild("Humanoid") and character:FindFirstChild("Head") then
-        local humanoid = character:FindFirstChild("Humanoid")
-        local head = character:FindFirstChild("Head")
+local vücutParçaları = {
+    karakter:Bulunan("Gövde"),
+    karakter:Bulunan("Sol Kol"),
+    karakter:Bulunan("Sağ Kol"),
+    karakter:Bulunan("Sol Bacak"),
+    karakter:Bulunan("Sağ Bacak")
+}
 
-        -- Vurgulama (Highlight)
-        local highlight = character:FindFirstChild("Highlight") or Instance.new("Highlight")
-        highlight.Parent = character
-        highlight.FillColor = Color3.new(1, 0, 0) -- Kırmızı vurgu
+local yüz = karakter.Kafa:Bulunan("Yüz")
 
-        -- İsim ve Can Bilgisi
-        local nameLabel = head:FindFirstChild("NameLabel") or Instance.new("BillboardGui")
-        nameLabel.Name = "NameLabel"
-        nameLabel.Parent = head
-        nameLabel.Adornee = head
-        nameLabel.Size = UDim2.new(0, 200, 0, 50)
-        nameLabel.StudsOffset = Vector3.new(0, 2, 0)
-
-        local textLabel = nameLabel:FindFirstChild("TextLabel") or Instance.new("TextLabel")
-        textLabel.Parent = nameLabel
-        textLabel.Size = UDim2.new(1, 0, 1, 0)
-        textLabel.BackgroundTransparency = 1
-        textLabel.TextScaled = true
-
-        textLabel.Text = player.Name .. " (" .. humanoid.Health .. "/" .. humanoid.MaxHealth .. ")"
-
-        humanoid.HealthChanged:Connect(function(health)
-            textLabel.Text = player.Name .. " (" .. health .. "/" .. humanoid.MaxHealth .. ")"
-        end)
-
-        character.AncestryChanged:Connect(function(_, parent)
-            if not parent then
-                if highlight then highlight:Destroy() end
-                if nameLabel then nameLabel:Destroy() end
-            end
-        end)
+local saçlar = {}
+for _, çocuk in ipairs(karakter:ÇocuklarıAl()) do
+    if çocuk:IsA("Accessory") and çocuk.Adı:lower():find("saç") then
+        table.insert(saçlar, çocuk)
     end
 end
 
-local function onCharacterAdded(character)
-    local player = Players:GetPlayerFromCharacter(character)
-    if player then
-        updateESP(player)
+local vurgulamaRengi = Color3.new(1, 0, 0)
+local vurgulamaSaydamlığı = 0.5
+
+for _, parça in ipairs(vücutParçaları) do
+    if parça then
+        local vurgulama = Instance.new("Highlight")
+        vurgulama.FillColor = vurgulamaRengi
+        vurgulama.FillTransparency = vurgulamaSaydamlığı
+        vurgulama.OutlineColor = vurgulamaRengi
+        vurgulama.OutlineTransparency = 0
+        vurgulama.Parent = parça
     end
 end
 
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(onCharacterAdded)
-    if player.Character then
-        onCharacterAdded(player.Character)
-    end
-end)
-
-for _, player in ipairs(Players:GetPlayers()) do
-    if player.Character then
-        onCharacterAdded(player.Character)
-    end
+if yüz then
+    local yüzVurgulama = Instance.new("Highlight")
+    yüzVurgulama.FillColor = vurgulamaRengi
+    yüzVurgulama.FillTransparency = 1
+    yüzVurgulama.OutlineColor = vurgulamaRengi
+    yüzVurgulama.OutlineTransparency = 1
+    yüzVurgulama.Parent = yüz
 end
 
-_G.HeadSize = 20
-_G.Disabled = false -- Eğer devre dışı bırakmak istemiyorsanız 'false' olarak ayarlayın
+for _, saç in ipairs(saçlar) do
+    local saçVurgulama = Instance.new("Highlight")
+    saçVurgulama.FillColor = vurgulamaRengi
+    saçVurgulama.FillTransparency = 1
+    saçVurgulama.OutlineColor = vurgulamaRengi
+    saçVurgulama.OutlineTransparency = 1
+    saçVurgulama.Parent = saç
+end
 
-RunService.RenderStepped:Connect(function()
-    if not _G.Disabled then
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player.Name ~= Players.LocalPlayer.Name and player.Character and player.Character:FindFirstChild("Head") then
-                pcall(function()
-                    player.Character.Head.Size = Vector3.new(_G.HeadSize, _G.HeadSize, _G.HeadSize)
-                    player.Character.Head.Transparency = 1
-                    player.Character.Head.BrickColor = BrickColor.new("Red")
-                    player.Character.Head.Material = "Neon"
-                    player.Character.Head.CanCollide = false
-                    player.Character.Head.Massless = true
-                end)
-            end
-        end
-    end
-end)
+-- esp bitti sırada silent aim
+-- slent aim
+
+function starts(String,Start)
+ 
+   return string.sub(String,1,string.len(Start))==Start
+ 
+end
+ 
+ 
+ 
+local headSize = 25
+ 
+ 
+ 
+local workspace = game:GetService("Workspace")
+ 
+ 
+ 
+ 
+ 
+while wait(1) do
+ 
+    local workspaceChildren = workspace:GetChildren();
+ 
+    for i = 1, #workspaceChildren do
+ 
+        local child = workspaceChildren[i]
+ 
+        if(starts(child.Name, "PseudoCharacter")) then
+ 
+            if(child:FindFirstChild("Hitboxes")) then
+ 
+	        local hitbox_mouse = child.Hitboxes.Mouse:GetChildren();
+ 
+            local hitbox_touch = child.Hitboxes.Touch:GetChildren();
+ 
+	        for i, child in ipairs(hitbox_mouse) do
+ 
+	            if child.Name == "Head" then
+ 
+	                local s = child.Size
+ 
+	                local f = headSize
+ 
+	                child.Size = Vector3.new(f, f, f)
+ 
+	            end
+ 
+	        end
+ 
+	        for i, child in ipairs(hitbox_touch) do
+ 
+	            if child.Name == "Head" then
+ 
+                    local s = child.Size
+ 
+                    local f = headSize
+ 
+                    child.Size = Vector3.new(f, f, f)
+ 
+	        end
+ 
+	        end
+ 
+	    end
+ 
+	    end
+ 
+end
+ 
+end
+
+-- silent bitti
