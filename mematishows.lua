@@ -1,4 +1,4 @@
--- esp
+
 
 local Players = game:GetService("Players")
 
@@ -42,8 +42,20 @@ for _, player in ipairs(Players:GetPlayers()) do
     highlightPlayer(player)
 end
 
--- esp bitti sırada silent aim
--- slent aim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function starts(String,Start)
  
@@ -115,4 +127,4 @@ end
  
 end
 
--- silent bitti
+
